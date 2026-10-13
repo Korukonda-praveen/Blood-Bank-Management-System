@@ -1,117 +1,154 @@
-# Blood Bank Management System using MySQL
+Blood Bank Management System
+A MySQL-based database project for managing blood donors, patients, donations, blood inventory, blood requests, and blood issue records. The project demonstrates relational database design and practical SQL concepts through sample data, indexes, views, stored procedures, triggers, and queries at basic, intermediate, and advanced levels.
+Project Overview
+The database helps organize blood bank information and supports queries for checking inventory, tracking donations, reviewing pending requests, and recording blood issues. The included ER diagram illustrates the entities, their attributes, and the relationships between them.
+Features
+Blood group management: Stores the eight blood groups represented in the sample data.
+Donor records: Maintains donor details, contact information, blood group, and last donation date.
+Patient records: Stores patient details, hospital name, contact number, and required blood group.
+Donation tracking: Records donation dates and units donated.
+Blood inventory: Tracks stock units, collection dates, and expiry dates.
+Blood requests: Records requested units and request status (Pending or Completed).
+Blood issue records: Stores which stock record was used for an issue, the request, date, and units issued.
+Views: Provides reusable views for available stock, donor details, pending requests, and donation summaries.
+Stored procedures: Includes procedures to add a donor, create or complete a request, and check stock for a blood group.
+Triggers: Updates a donor's last donation date after a donation is inserted and deducts stock units after a blood issue is inserted.
+SQL practice queries: Includes basic, intermediate, and advanced examples using joins, aggregates, subqueries, grouping, and filtering.
+Indexes: Adds indexes to selected foreign-key and frequently queried columns.
+Database Schema
+The SQL script creates the Bloodbank_db database and the following seven tables:
+Table
+Purpose
+blood_group
+Blood group identifiers and names
+donor
+Donor details and blood group reference
+patient
+Patient details, hospital, and blood group reference
+donation
+Donation history, donor, blood group, date, and units
+blood_stock
+Inventory quantities, collection dates, and expiry dates
+blood_request
+Patient blood requests, required units, date, and status
+blood_issue
+Blood issued against a request and stock record
+Relationships
+One blood group can be associated with multiple donors, patients, donations, stock records, and blood requests.
+One donor can have multiple donation records.
+One patient can create multiple blood requests.
+A blood request can be associated with blood issue records.
+A blood stock record can be referenced by multiple blood issue records.
+See Blood Bank Management System.png for the ER diagram.
+SQL Concepts Demonstrated
+Database and table creation
+Primary keys and foreign keys
+ENUM, DATE, and other column data types
+Sample data insertion
+Index creation
+Views and joins
+Stored procedures and input parameters
+Triggers
+Aggregate functions such as COUNT, SUM, and AVG
+GROUP BY and HAVING
+Subqueries and correlated subqueries
+LEFT JOIN, filtering, and sorting/query logic
+Technologies Used
+Database: MySQL
+Language: SQL
+Design: Entity–Relationship (ER) diagram
+Project Files
+Blood-Bank-Management-System/
+├── BLOOD BANK MANAGEMENT SYSTEM.sql
+├── Blood Bank Management System.png
+└── README.md
+​
+The filenames shown above match the uploaded files. You may rename them to simpler GitHub-friendly names if you prefer, and update the README references accordingly.
+Getting Started
+Prerequisites
+MySQL Server 8.0 or a compatible MySQL version
+MySQL Workbench, or another SQL client that can execute MySQL scripts
+Installation and Setup
+Clone or download this repository.
+Open MySQL Workbench and connect to your local MySQL server.
+Open BLOOD BANK MANAGEMENT SYSTEM.sql.
+Execute the script from top to bottom.
+Refresh the Schemas panel and select Bloodbank_db to inspect the created database.
+Alternatively, run the script from a terminal:
+mysql -u root -p < "BLOOD BANK MANAGEMENT SYSTEM.sql"
+​
+Important: The script starts with DROP DATABASE IF EXISTS Bloodbank_db;. Running it will delete and recreate an existing database with that name. Back up any important data before execution.
+Explore the Database
+After running the script, try these queries:
+USE Bloodbank_db;
 
-## Project Overview
+-- View the available stock records
+SELECT * FROM available_blood_stock;
 
-The **Blood Bank Management System** is a database management project developed using MySQL to manage blood donors, patients, donations, blood stock, blood requests, and blood issue records.
+-- View donors with their blood group names
+SELECT * FROM donor_details;
 
-The project demonstrates relational database design and SQL programming through tables, constraints, indexes, views, stored procedures, triggers, and basic, intermediate, and advanced SQL queries.
+-- View pending blood requests
+SELECT * FROM pending_blood_requests;
 
-## Features
+-- Summarize donations by blood group
+SELECT * FROM blood_donation_summary;
 
-- Management of blood groups, donors, and patients
-- Recording blood donations
-- Tracking blood stock and expiry dates
-- Managing blood requests and their status
-- Recording blood issue transactions
-- Viewing available, non-expired blood stock
-- Summarizing donations by blood group
-- Retrieving pending blood requests
-- Automatically updating a donor's last donation date
-- Automatically deducting issued units from blood stock
-- Improving data retrieval with indexes
-- Practicing SQL queries at three difficulty levels
+-- Count donors in each blood group
+SELECT bg.blood_group_name, COUNT(d.donor_id) AS donor_count
+FROM blood_group AS bg
+LEFT JOIN donor AS d
+    ON bg.blood_group_id = d.blood_group_id
+GROUP BY bg.blood_group_id, bg.blood_group_name;
 
-## Database Tables
+-- Count requests by status
+SELECT status, COUNT(*) AS request_count
+FROM blood_request
+GROUP BY status;
+​
+The SQL file also contains example calls and verification queries for the stored procedures and triggers.
+Stored Procedures
+Procedure
+Purpose
+add_donor
+Inserts a donor record
+create_blood_request
+Creates a blood request with a pending status
+complete_blood_request
+Marks a request as completed
+check_blood_stock
+Returns the total stock units for a specified blood group ID
+Review the parameter definitions in the SQL file before calling a procedure. Use IDs that exist in your own data and avoid inserting duplicate primary keys.
+Views
+View
+Description
+available_blood_stock
+Shows stock records with units available and an expiry date that is not in the past
+donor_details
+Combines donor details with blood group names
+pending_blood_requests
+Lists pending requests with patient, hospital, and blood group details
+blood_donation_summary
+Summarizes donation counts and donated units by blood group
+Triggers
+trg_update_donor_last_donation: After a new donation is inserted, updates the corresponding donor's last donation date.
+trg_deduct_blood_stock: After a blood issue is inserted, subtracts the issued units from the referenced stock record.
+Note: These triggers implement basic automation for demonstration. The script does not include all production safeguards, such as validating that stock is sufficient before an issue, preventing negative inventory, or wrapping related changes in a carefully managed transaction. Review and test these safeguards before using the design in a real system.
+ER Diagram
+The ER diagram documents the main entities, their attributes, primary/foreign keys, and relationships.
+<img width="5640" height="3223" alt="Blood Bank Management System" src="https://github.com/user-attachments/assets/8a89b393-2942-477e-b2c0-a78920912342" />
 
-The project contains seven tables:
-
-1. `blood_group`
-2. `donor`
-3. `patient`
-4. `donation`
-5. `blood_stock`
-6. `blood_request`
-7. `blood_issue`
-
-Primary keys and foreign keys establish relationships between the tables. The schema also includes a unique constraint and ENUM data types.
-
-## SQL Concepts Used
-
-- Database and table creation
-- Primary and foreign key constraints
-- INSERT and UPDATE statements
-- INNER JOIN and LEFT JOIN
-- WHERE and DISTINCT
-- GROUP BY and HAVING
-- Aggregate functions: COUNT, SUM, AVG, and MAX
-- Subqueries
-- IFNULL and CURDATE functions
-- Index creation
-- Views
-- Stored procedures with input parameters
-- AFTER INSERT triggers
-- SQL aliases and relational data retrieval
-
-## Views
-
-The project includes four views:
-
-1. `available_blood_stock`: Displays available, non-expired blood stock.
-2. `donor_details`: Displays donor information with blood group names.
-3. `pending_blood_requests`: Displays pending blood requests with patient and hospital details.
-4. `blood_donation_summary`: Summarizes donations and donated units by blood group.
-
-## Stored Procedures
-
-Four stored procedures are implemented:
-
-| Procedure | Purpose |
-|---|---|
-| `add_donor` | Inserts a new donor record |
-| `create_blood_request` | Creates a pending blood request |
-| `complete_blood_request` | Marks a blood request as completed |
-| `check_blood_stock` | Calculates available units for a blood group |
-
-## Triggers
-
-Two triggers automate database updates:
-
-| Trigger | Purpose |
-|---|---|
-| `trg_update_donor_last_donation` | Updates the donor's last donation date after a donation record is inserted |
-| `trg_deduct_blood_stock` | Deducts issued units from the corresponding stock record after a blood issue is inserted |
-
-## Indexes
-
-Ten indexes are created on selected donor, patient, donation, blood stock, blood request, and blood issue columns to support data retrieval.
-
-## SQL Query Practice
-
-The project contains 19 numbered queries organized into three levels:
-
-- **Basic Queries:** Q1–Q8
-- **Intermediate Queries:** Q9–Q15
-- **Advanced Queries:** Q16–Q19
-
-These queries cover data retrieval, filtering, joins, grouping, aggregate calculations, and subqueries.
-
-## Technologies Used
-
-- MySQL
-- SQL
-- MySQL stored procedures and triggers
-
-## How to Run
-
-1. Install MySQL and open MySQL Workbench or another compatible MySQL client.
-2. Open the `BLOOD BANK MANAGEMENT SYSTEM.sql` file.
-3. Execute the script in sections, starting with database and table creation.
-4. Review the sample data, indexes, views, stored procedures, and triggers.
-5. Run the query bank to explore the database.
-6. Use `SHOW TABLES;`, `SHOW FULL TABLES WHERE TABLE_TYPE = 'VIEW';`, and `SHOW TRIGGERS;` to inspect the created objects.
-
-**Note:** The script begins with `DROP DATABASE IF EXISTS`, so running it from the beginning recreates the database and removes any existing data in that database.
-
-## Learning Outcomes
-
-This project demonstrates practical understanding of relational database design, SQL query writing, data aggregation, indexing, stored procedures, and trigger-based automation using MySQL.
+If the image does not render after uploading, check that the image filename in the Markdown matches the exact filename committed to the repository.
+Limitations and Future Improvements
+Add validation to prevent issuing more units than are available.
+Ensure stock quantities cannot become negative.
+Validate donor eligibility and donation intervals according to applicable medical guidelines.
+Add transactions and error handling for multi-step operations.
+Add automatic reconciliation between donations and inventory.
+Strengthen data validation with appropriate NOT NULL, CHECK, and uniqueness constraints.
+Add application-level authentication, role-based access, and a user interface if expanding beyond a database-only project.
+Use synthetic or anonymized data; protect real donor and patient information.
+Disclaimer
+This is an educational SQL database project, not a certified medical or blood-bank management application. The sample records are for demonstration. Blood compatibility, donor eligibility, expiry handling, and transfusion decisions must follow qualified medical and regulatory guidance.
+Author
+Korukonda Praveen
