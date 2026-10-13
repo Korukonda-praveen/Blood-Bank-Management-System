@@ -1,57 +1,31 @@
-# 🩸 Blood Bank Management System (MySQL)
+# Blood Bank Management System using MySQL
 
-[![MySQL](https://img.shields.io/badge/Database-MySQL_8.0+-blue.svg?logo=mysql&logoColor=white)](https://www.mysql.com/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![SQL Practice](https://img.shields.io/badge/SQL-Basic_to_Advanced-orange.svg)]()
+## Project Overview
 
-A comprehensive MySQL relational database project designed to model, manage, and automate operations for a blood bank. This project demonstrates database schema design, normalization, triggers, stored procedures, views, performance indexing, and analytical SQL querying.
+The **Blood Bank Management System** is a database management project developed using MySQL to manage blood donors, patients, donations, blood stock, blood requests, and blood issue records.
 
----
+The project demonstrates relational database design and SQL programming through tables, constraints, indexes, views, stored procedures, triggers, and basic, intermediate, and advanced SQL queries.
 
-## 📌 Table of Contents
-- [Overview](#-overview)
-- [Key Features](#-key-features)
-- [Database Architecture & ER Diagram](#-database-architecture--er-diagram)
-  - [Entity-Relationship Diagram](#entity-relationship-diagram)
-  - [Database Tables](#database-tables)
-- [Advanced SQL Concepts Demonstrated](#-advanced-sql-concepts-demonstrated)
-  - [Views](#1-views)
-  - [Stored Procedures](#2-stored-procedures)
-  - [Triggers](#3-triggers)
-  - [Performance Indexing](#4-performance-indexing)
-- [Repository Structure](#-repository-structure)
-- [Getting Started & Installation](#-getting-started--installation)
-- [Usage & Sample Queries](#-usage--sample-queries)
-- [Limitations & Future Improvements](#-limitations--future-improvements)
-- [Disclaimer & Author](#-disclaimer--author)
+## Features
 
----
+- Management of blood groups, donors, and patients
+- Recording blood donations
+- Tracking blood stock and expiry dates
+- Managing blood requests and their status
+- Recording blood issue transactions
+- Viewing available, non-expired blood stock
+- Summarizing donations by blood group
+- Retrieving pending blood requests
+- Automatically updating a donor's last donation date
+- Automatically deducting issued units from blood stock
+- Improving data retrieval with indexes
+- Practicing SQL queries at three difficulty levels
 
-## 🔬 Overview
+## Database Architecture
 
-Managing a blood bank requires precise tracking of perishable stock, rapid response to urgent patient requests, and consistent record-keeping of donors and donations. 
+### ER Diagram
 
-This project implements a relational schema using **MySQL** that automates core stock deductions and donor date tracking using triggers, simplifies reporting using database views, encapsulates complex operations inside stored procedures, and provides a practice bank of 19 structured SQL queries across **Basic**, **Intermediate**, and **Advanced** difficulty levels.
-
----
-
-## ✨ Key Features
-
-- **Donor & Patient Management:** Track donor details, contact information, eligibility, and patient hospital requests.
-- **Inventory & Expiry Control:** Track available units, collection dates, and expiry dates to prevent usage of expired stock.
-- **Automated Workflow Automation:**
-  - Automatically updates a donor's `last_donation_date` upon recording a new donation.
-  - Automatically deducts issued units from `blood_stock` upon recording a blood issue.
-- **Reusable Reporting Views:** Real-time visibility into non-expired stock, pending requests, donor details, and aggregated donation metrics.
-- **Optimized Data Access:** Foreign key indexes and targeted query indexes for rapid data retrieval.
-
----
-
-## 📐 Database Architecture & ER Diagram
-
-### Entity-Relationship Diagram
-
-The database consists of **7 relational tables** linked via primary and foreign key constraints. The ER diagram below outlines the core entities, attributes, and relationships across the system:
+The entity-relationship model and relational database design are illustrated below:
 
 <p align="center">
   <img src="Blood%20Bank%20Management%20System.png" alt="Blood Bank Management System ER Diagram" width="100%">
@@ -59,29 +33,74 @@ The database consists of **7 relational tables** linked via primary and foreign 
 
 ### Database Tables
 
-| Table Name | Description | Key Relationships |
-| :--- | :--- | :--- |
-| `blood_group` | Stores standardized blood types (e.g., A+, O-, AB+) | Referenced by `donor`, `patient`, `donation`, `blood_stock`, `blood_request` |
-| `donor` | Stores registered blood donors | References `blood_group` |
-| `patient` | Stores recipient details and hospital affiliations | References `blood_group` |
-| `donation` | Logs historical blood donations per donor | References `donor`, `blood_group` |
-| `blood_stock` | Manages physical inventory, quantities, and expiry dates | References `blood_group` |
-| `blood_request` | Records incoming hospital/patient blood requests (`Pending`, `Completed`) | References `patient`, `blood_group` |
-| `blood_issue` | Records fulfilled blood issue transactions | References `blood_request`, `blood_stock` |
+The project contains seven tables linked via primary and foreign key constraints:
+
+1. **`blood_group`**: Stores blood group identifiers and names.
+2. **`donor`**: Stores donor details, contact information, and blood group references.
+3. **`patient`**: Stores patient details, hospital information, and required blood groups.
+4. **`donation`**: Records blood donation history, units donated, and dates.
+5. **`blood_stock`**: Tracks available blood inventory, collection dates, and expiry dates.
+6. **`blood_request`**: Stores patient blood requests, required units, and request status (`Pending` / `Completed`).
+7. **`blood_issue`**: Tracks blood issued against specific requests and stock records.
 
 ---
 
-## 🛠️ Advanced SQL Concepts Demonstrated
+## SQL Concepts Used
 
-### 1. Views
-Pre-built database views for abstracting complex joins and simplifying analytical queries:
-- `available_blood_stock`: Filters available stock where `expiry_date >= CURDATE()`.
-- `donor_details`: Joins donor profiles with blood group names.
-- `pending_blood_requests`: Lists unfulfilled patient requests and hospital details.
-- `blood_donation_summary`: Summarizes total donations and units collected per blood group.
+- Database and table creation
+- Primary key and foreign key constraints
+- `INSERT` and `UPDATE` statements
+- `INNER JOIN` and `LEFT JOIN`
+- `WHERE` and `DISTINCT`
+- `GROUP BY` and `HAVING`
+- Aggregate functions: `COUNT`, `SUM`, `AVG`, and `MAX`
+- Subqueries
+- `IFNULL` and `CURDATE` functions
+- Index creation
+- Views
+- Stored procedures with input parameters
+- `AFTER INSERT` triggers
+- SQL aliases and relational data retrieval
 
-### 2. Stored Procedures
-- `add_donor(...)`: Standardized insertion of new donor records.
-- `create_blood_request(...)`: Generates a new blood request with a default `Pending` status.
-- `complete_blood_request(...)`: Updates request status to `Completed`.
-- `check_
+---
+
+## Database Objects
+
+### Views
+
+| View Name | Description |
+|---|---|
+| `available_blood_stock` | Displays available, non-expired blood stock. |
+| `donor_details` | Displays donor information merged with blood group names. |
+| `pending_blood_requests` | Displays pending blood requests with patient and hospital details. |
+| `blood_donation_summary` | Summarizes total donations and donated units by blood group. |
+
+### Stored Procedures
+
+| Procedure Name | Purpose |
+|---|---|
+| `add_donor` | Inserts a new donor record. |
+| `create_blood_request` | Creates a new blood request with pending status. |
+| `complete_blood_request` | Marks a pending blood request as completed. |
+| `check_blood_stock` | Calculates available units for a specific blood group. |
+
+### Triggers
+
+| Trigger Name | Purpose |
+|---|---|
+| `trg_update_donor_last_donation` | Updates the donor's `last_donation_date` after a donation record is inserted. |
+| `trg_deduct_blood_stock` | Deducts issued units from the corresponding stock record after a blood issue is inserted. |
+
+### Indexes
+
+Ten indexes are created on selected donor, patient, donation, blood stock, blood request, and blood issue columns to optimize data retrieval and query execution.
+
+---
+
+## Repository Structure
+
+```text
+Blood-Bank-Management-System/
+├── BLOOD BANK MANAGEMENT SYSTEM.sql   # Complete SQL script containing tables, views, procedures, triggers & queries
+├── Blood Bank Management System.png   # ER Diagram reference image
+└── README.md                          # Documentation
